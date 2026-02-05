@@ -3,7 +3,7 @@ import { fetchLeagueGames, fetchLeagues } from '@/components/utils';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Input } from '@rneui/themed';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 
 function getLeagueIdByName(leagues, name) {
   // TODO: Implement better search
@@ -22,6 +22,8 @@ export default function Tab() {
   const [leagueId, setLeagueId] = useState(39)
   const [fromDate, setFromDate] = useState(new Date())
   const [toDate, setToDate] = useState(new Date())
+
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
     const asyncCall = async () => {
@@ -43,11 +45,11 @@ export default function Tab() {
       toDate.setSeconds(0)
       toDate.setMilliseconds(0)
 
-      const leagueGames = await fetchLeagueGames(leagueId, fromDate, toDate)
+      const leagueGames = await fetchLeagueGames(leagueId, fromDate, toDate, showAll)
       setGames([...leagueGames])
     }
     asyncCall()
-  }, [leagueId, fromDate, toDate])
+  }, [leagueId, fromDate, toDate, showAll])
 
   async function onSearchInput(input) {
     const id = getLeagueIdByName(leagues, input)
@@ -76,6 +78,8 @@ export default function Tab() {
           <DateTimePicker value={fromDate} onChange={onChangeFromDate} />
           <DateTimePicker value={toDate} onChange={onChangeToDate} />
         </View>
+
+        <Button title={"show archive"} onPress={() => setShowAll(!showAll)} />
       </View>
 
       <GamesList games={games} />

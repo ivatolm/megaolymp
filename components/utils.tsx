@@ -57,21 +57,30 @@ export const fetchLeagues = async () => {
     return leagues
 }
 
-export const fetchLeagueGames = async (leagueId, from, to) => {
+export const fetchLeagueGames = async (leagueId, from, to, shouldShowAll) => {
     const fromFormatted = from.toLocaleDateString("en-ca")
     const toFormatted = to.toLocaleDateString("en-ca")
     
-    const response = await fetch(`https://api.sstats.net/Games/list?leagueid=${leagueId}&from=${fromFormatted}&to=${toFormatted}`, {
-        headers: {
-            'Authorization': `ApiKey ${API_KEY}`,
-            'Content-Type': 'application/json'
-        }
-    })
+    let response;
+    if (shouldShowAll) {
+        response = await fetch(`https://api.sstats.net/Games/list?leagueid=${leagueId}`, {
+            headers: {
+                'Authorization': `ApiKey ${API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        })
+    } else {
+        response = await fetch(`https://api.sstats.net/Games/list?leagueid=${leagueId}&from=${fromFormatted}&to=${toFormatted}`, {
+            headers: {
+                'Authorization': `ApiKey ${API_KEY}`,
+                'Content-Type': 'application/json'
+            }
+        })
+    }
     const result = await response.json()
 
     const games = []
 
-    console.log(result.data)
     try {
         for (const item of result.data) {
             games.push(parseGameIntoRelevant(item))
